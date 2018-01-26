@@ -63,3 +63,13 @@ edited_dict = dict_keys_stringify_func(example_dict)
 print(edited_dict)
 
 print(numbers_multiplier_func(1, 5, 6, 12, 9))
+
+
+try:
+    x = len(5)
+except TypeError as error_text:
+    print("Error detected")
+    import traceback
+    print(traceback.format_exc())
+finally:
+    print("FINAL!")
