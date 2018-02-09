@@ -13,9 +13,12 @@ class DeckClass:
         return self.card_pack
 
 
-class CardClass(DeckClass):
-    def __init__(self, card, suit):
-        self.card = (card, suit)
+class CardClass:
+    def __init__(self, card_number, suit):
+        self.card_number = card_number
+        self.suit = suit
+    def __repr__(self):
+        return str(self.card_number) + " of " + str(self.suit)
 
 
 class PlayerClass:
@@ -24,6 +27,7 @@ class PlayerClass:
 
 
 my_deck = DeckClass()
-print(my_deck.card_pack)
+for card in my_deck.card_pack:
+    print(card)
 print("\n")
 print(my_deck.shuffle())
