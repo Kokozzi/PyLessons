@@ -122,7 +122,8 @@ class CroupierClass:
                     players_result[player.name]["max_card"] = max(players_result[player.name]["max_card"], card.card_ranking)
             if players_result[player.name]["count"] == 5:
                 winners_list.append((player.name, players_result[player.name]["max_card"]))
-        self.flush_winners = sorted(winners_list, key=lambda tup: tup[1])
+        winners_list = sorted(winners_list, key=lambda tup: tup[1], reverse=True)
+        self.flush_winners = winners_list[0]
 
     def get_ordered_hand(self, player):
         ordered_hand = []
@@ -151,32 +152,47 @@ class CroupierClass:
                             n += 1
                 else:
                     break
-        self.straight_winners = sorted(winners_list, key=lambda tup: tup[1])
+        winners_list = sorted(winners_list, key=lambda tup: tup[1], reverse=True)
+        self.straight_winners = winners_list[0]
     
     def check_fours(self):
-        winners_list = []
-        self.fours_winners = sorted(winners_list, key=lambda tup: tup[1])
-    
-    def winner_check(self, winners_list, combination):
-        winners_list = sorted(winners_list, key=lambda tup: tup[1])
-        if len(winners_list) > 0:
-            print("{} is winner with {}".format(winners_list[0][0], combination))
-        else:
-            print("No winner")
-    
+        pairs_list = []
+        sets_list = []
+        fours_list = []
+        for player in self.players:
+            player_hand = self.get_ordered_hand(player)
+            for element1 in player_hand:
+                repeat_counter = 0
+                for element2 in player_hand:
+                    if element1 == element2:
+                        repeat_counter += 1
+                if repeat_counter == 2:
+                    pairs_list.append((player.name, element1))
+                if repeat_counter == 3:
+                    sets_list.append((player.name, element1))
+                if repeat_counter == 4:
+                    fours_list.append((player.name, element1))
+            if len(pairs_list > 2):
+                pairs_list = sorted(pairs_list, key=lambda tup: tup[1], reverse=True)
+                pairs_list = pairs_list[:2]
+        fours_list = sorted(fours_list, key=lambda tup: tup[1], reverse=True)
+        self.fours_winners = fours_list[0]
+
     def get_winner(self):
         if len(self.straight_winners) > 0 and len(self.flush_winners) > 0:
-            if self.straight_winners[0][0] == self.flush_winners[0][0]:
-                if self.straight_winners[0][1] == 12:
-                    print("{} wins with ROYAL FLUSH!".format(self.straight_winners[0][0]))
+            if self.straight_winners == self.flush_winners:
+                if self.straight_winners[1] == 12:
+                    print("{} wins with ROYAL FLUSH!".format(self.straight_winners[0]))
                 else:
-                    print("{} wins with Straight Flush!".format(self.straight_winners[0][0]))
+                    print("{} wins with Straight Flush!".format(self.straight_winners[0]))
+            elif len(self.fours_winners) > 0:
+                    print("{} wins with Fours!".format(self.fours_winners[0]))
             else:
-                print("{} wins with Flush!".format(self.flush_winners[0][0]))
+                print("{} wins with Flush!".format(self.flush_winners[0]))
         elif len(self.straight_winners) > 0:
-            print("{} wins with Straight!".format(self.straight_winners[0][0]))
+            print("{} wins with Straight!".format(self.straight_winners[0]))
         elif len(self.flush_winners) > 0:
-            print("{} wins with Flush!".format(self.flush_winners[0][0]))
+            print("{} wins with Flush!".format(self.flush_winners[0]))
         else:
             print("Winner unknown")
             
