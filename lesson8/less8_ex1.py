@@ -1,6 +1,7 @@
 class WarField:
     start_field = {}
     guess_field = {}
+    ships = []
     possible_letters = "АБВГДЕЖЗИК"
     enumerateted_letters = list(enumerate(possible_letters))
 
@@ -37,13 +38,13 @@ class WarField:
         required_ships = [(1, 4), (2, 3), (3, 2), (4, 1)]
         result = list(map(self.place_ship, required_ships))
     
-    def place_ship(self, ship):
-        for current_ship in range(ship[0]):
-            ship_size = ship[1]
+    def place_ship(self, ship_definitions):
+        for current_ship in range(ship_definitions[0]):
+            ship = Ship(ship_definitions[1])
+            self.ships.append(ship)
             possible_next_coords = []
-            full_ship_coords = []
             while True:
-                user_coords = input("Введите координаты {}-палубного корабля:".format(ship[1]))
+                user_coords = input("Введите координаты {}-палубного корабля:".format(ship_definitions[1]))
                 user_coords = user_coords.upper()
                 if user_coords not in self.start_field:
                     print("Введены неверные координаты!")
@@ -56,10 +57,9 @@ class WarField:
                     continue
                 self.start_field[user_coords] = True
                 self.display_game_field(self.start_field)
-                ship_size -= 1
-                if ship_size != 0:
-                    full_ship_coords.append(user_coords)
-                    possible_next_coords = self.get_possible_coords(user_coords, full_ship_coords)
+                ship.set_coord(user_coords)
+                if ship.current_length != ship.length:
+                    possible_next_coords = self.get_possible_coords(user_coords, ship.coords)
                 else:
                     break
             # self.set_ships_separators(full_ship_coords)
@@ -141,17 +141,37 @@ class WarField:
         print("horizontal", result)
         return result
 
-    def set_ships_separators(self, full_ship_coords):
-        if len(full_ship_coords) == 1:
-            ship_coords = full_ship_coords[0]
-            letter_index = [x[0] for x in self.enumerateted_letters if x[1] == ship_coords[0]][0]
-        elif len(full_ship_coords) > 1:
-            full_ship_coords = sorted(full_ship_coords, key=lambda x: x[0])
-            start_letter = full_ship_coords[0][0]
-            start_point = [x[0] for x in self.enumerateted_letters if x[1] == start_letter][0]
-            finish_letter = full_ship_coords[-1][0]
-            finish_point = [x[0] for x in self.enumerateted_letters if x[1] == finish_letter][0]
-        else:
-            raise ValueError("Wrong ship size detected")
+    # def set_ships_separators(self, full_ship_coords):
+    #     if len(full_ship_coords) == 1:
+    #         ship_coords = full_ship_coords[0]
+    #         letter_index = [x[0] for x in self.enumerateted_letters if x[1] == ship_coords[0]][0]
+    #     elif len(full_ship_coords) > 1:
+    #         full_ship_coords = sorted(full_ship_coords, key=lambda x: x[0])
+    #         start_letter = full_ship_coords[0][0]
+    #         start_point = [x[0] for x in self.enumerateted_letters if x[1] == start_letter][0]
+    #         finish_letter = full_ship_coords[-1][0]
+    #         finish_point = [x[0] for x in self.enumerateted_letters if x[1] == finish_letter][0]
+    #     else:
+    #         raise ValueError("Wrong ship size detected")
+
+
+class Ship:
+    length = 0
+    current_length = 0
+    coords = []
+
+    def __init__(self, length):
+        self.length = length
+    
+    def set_coord(self, coord):
+        self.coords.append(coord)
+        self.current_length += 1
+        return self.current_length
+    
+    def hit(self, coord):
+        self.current_length -= 1
+        self.coords = list(filter(lambda x: x != coord, self.coords))
+        return self.current_length
+
 
 player1 = WarField()
