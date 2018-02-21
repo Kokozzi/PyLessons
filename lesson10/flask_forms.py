@@ -23,7 +23,7 @@ class ContactForm(FlaskForm):
 app = Flask(__name__)
 app.config.update(
     DEBUG=True,
-    SECRET_KEY='This key must be secret!',
+    SECRET_KEY='some_secret_inside',
     WTF_CSRF_ENABLED=False,
 )
 
@@ -41,7 +41,7 @@ def home():
             return ('invalid', 400)
 
     if request.method == 'GET':
-        return 'hello world!', 200
+        return 'hello world1!', 200
 
 
 if __name__ == '__main__':

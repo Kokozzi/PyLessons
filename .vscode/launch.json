@@ -93,7 +93,7 @@
             "request": "launch",
             "stopOnEntry": false,
             "pythonPath": "${config:python.pythonPath}",
-            "program": "fully qualified path fo 'flask' executable. Generally located along with python interpreter",
+            "program": "${file}",
             "cwd": "${workspaceFolder}",
             "env": {
                 "FLASK_APP": "${workspaceFolder}/quickstart/app.py"
