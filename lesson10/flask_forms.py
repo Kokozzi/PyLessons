@@ -1,9 +1,12 @@
 from flask import Flask, request
+import datetime
 
-from threading import Lock
-# pip install flask-WTF
 from flask_wtf import FlaskForm
-from wtforms import StringField, validators
+from wtforms import StringField, DateField, validators
+
+
+def month_validator(form, field):
+    current_month = datetime.date.month
 
 
 class ContactForm(FlaskForm):
@@ -15,15 +18,16 @@ class ContactForm(FlaskForm):
         validators.Email()
     ])
     job = StringField(label='JOB', validators=[
-        validators.Length(min=1, max=35),
-        validators.Optional()
+        validators.AnyOf(["it", "bank", "hr"]),
+        validators.DataRequired()
     ])
+    date = DateField(label="Date")
 
 
 app = Flask(__name__)
 app.config.update(
     DEBUG=True,
-    SECRET_KEY='some_secret_inside',
+    SECRET_KEY='This key must be secret!',
     WTF_CSRF_ENABLED=False,
 )
 
@@ -41,7 +45,7 @@ def home():
             return ('invalid', 400)
 
     if request.method == 'GET':
-        return 'hello world1!', 200
+        return 'hello world!', 200
 
 
 if __name__ == '__main__':
