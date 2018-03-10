@@ -1,6 +1,9 @@
-from flask import Flask, request
+from flask import Flask, request, abort, Response
 from flask_sqlalchemy import SQLAlchemy
+
 import json
+from datetime import datetime
+
 import app_config as config
 
 app = Flask(__name__)
@@ -28,11 +31,35 @@ def items():
             guest_post = GuestBookItem(**form.data)
             db.session.add(guest_post)
             db.session.commit()
-            return "Success"
+            response = Response(json.dumps(guest_post.as_dict()))
+            response.headers["Location"] = "/items/{}".format(guest_post.id)
+            return response, 201
         else:
             return "Invalid form"
     else:
-        return "Error"
+        return "Error", 400
+
+
+@app.route("/items/<item_id>", methods=["GET", "PATCH"])
+def item_detail(item_id):
+    from models import GuestBookItem
+    if request.method == "GET":
+        guest_post = GuestBookItem.query.filter_by(id=item_id).first()
+        if guest_post is None:
+            abort(404)
+        return json.dumps(guest_post.as_dict())
+    elif request.method == "PATCH":
+        from forms import GuestBookForm
+        print(request.form)
+        form = GuestBookForm(request.form)
+        form.data["updated_at"] = datetime.now()
+        print(form.data)
+        db_update = db.session.query(GuestBookItem).filter_by(id=item_id).update(form.data)
+        db.session.commit()
+        guest_post = GuestBookItem.query.filter_by(id=item_id).first()
+        return json.dumps(guest_post.as_dict_updated())
+    else:
+        return "Error", 400
 
 
 if __name__ == "__main__":
