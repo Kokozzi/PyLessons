@@ -15,6 +15,7 @@ class GuestBookItem(db.Model):
             "author": self.author,
             "text": self.text,
             "time_created": self.time_created.isoformat(),
+            "is_visible": self.is_visible,
         }
 
     def as_dict_updated(self):
