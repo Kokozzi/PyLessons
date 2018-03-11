@@ -25,7 +25,9 @@ def items():
             posts_list.append(post.as_dict())
         return json.dumps(posts_list)
     elif request.method == "POST":
+        print(request.form)
         form = GuestBookForm(request.form)
+        print(form.data)
         if form.validate():
             guest_post = GuestBookItem(**form.data)
             db.session.add(guest_post)
@@ -67,7 +69,7 @@ def item_detail(item_id):
             update_dict["text"] = text
         if len(update_dict) == 0:
             return "Empty update", 400
-        update_dict["updated_at"] = datetime.now()
+        # update_dict["updated_at"] = datetime.now()
         db_update = db.session.query(GuestBookItem).filter_by(id=post_id)
         if db_update.first() is None:
             abort(404)
