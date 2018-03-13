@@ -1,0 +1,7 @@
+DEBUG = True
+SECRET_KEY = 'imgbrd secret'
+
+SQLALCHEMY_DATABASE_URI = 'sqlite:///imgbrd.db'
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+WTF_CSRF_ENABLED = False

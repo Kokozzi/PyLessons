@@ -1,0 +1,26 @@
+{% extends "blog.jinja2" %}
+
+
+{% block posts %}
+</br>
+</br>
+    {% for item in data %}
+        Author: {{item.post.author}}
+        </br>
+        Post created: {{item.post.time_created}}
+        </br>
+        Title: {{item.post.header}}
+        </br>
+        Post: {{item.post.text}}
+        </br>
+        </br>
+        Comments:
+        </br>
+        {% for comment in item.comments %}
+        {{comment.author}} : {{comment.text}}
+        </br>
+        {% endfor %}
+    </br>
+    </br>
+    {% endfor %}
+{% endblock %}
