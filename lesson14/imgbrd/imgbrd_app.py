@@ -23,7 +23,7 @@ def index():
             comments = Comment.query.filter_by(post_id = post.id)
             result.append({"post": post, "comments": comments})
         # Render Blog template
-        return render_template('posts.jinja2', data=result)
+        return render_template('index.html', data=result)
     # Creating post or comment
     elif request.method == "POST":
         # 'request_type' is 'post' or 'comment'
