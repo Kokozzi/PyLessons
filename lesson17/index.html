@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Dashboard</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="dashboard.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+      <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+        </li>
+      </ul>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+
+        <main role="main" class="col-md-12 ml-sm-auto col-lg-12 pt-3 px-4">
+
+            <h2>Users</h2>
+            <div class="table-responsive">
+              <table id="users_table" class="table table-striped table-sm">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>E-mail</th>
+                    <th>Phone</th>
+                  </tr>
+                </thead>
+                <tbody id="user_table_body">
+                </tbody>
+              </table>
+            </div>
+
+    
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+            <h1 class="h2">Comments Chart</h1>
+          </div>
+
+          <canvas class="my-4" id="myChart" width="900" height="380"></canvas>
+
+        </main>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" crossorigin="anonymous"></script>
+    <script src="popper.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+    <script>
+      feather.replace()
+    </script>
+
+    <!-- Graphs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+    <script>
+
+      var users_request = $.ajax({
+          url: 'https://jsonplaceholder.typicode.com/users',
+          crossDomain: true,
+          dataType: 'jsonp'
+      });
+
+      users_request.done(function (data, textStatus, jqXHR) {
+          console.log(data);
+          for (var user of data) {
+            var html = "<tr>";
+            html += "<td>" + user.id + "</td>";
+            html += "<td>" + user.name + "</td>";
+            html += "<td>" + user.username + "</td>";
+            html += "<td>" + user.email + "</td>";
+            html += "<td>" + user.phone + "</td>";
+            html += "</tr>";
+            $("#user_table_body").append(html);
+          }
+      });
+
+      var comments_request = $.ajax({
+          url: 'https://jsonplaceholder.typicode.com/comments',
+          crossDomain: true,
+          dataType: 'jsonp'
+      });
+
+      comments_request.done(function (data, textStatus, jqXHR) {
+          console.log(data);
+          var comments_object = {};
+          var posts = [];
+          for (var comment of data) {
+            if (comments_object[comment.postId] !== undefined) {
+              comments_object[comment.postId] += 1;
+            } else {
+              posts.push(comment.postId);
+              comments_object[comment.postId] = 1;
+            }
+          }
+          console.log(comments_object);
+          console.log(posts);
+
+          var comments_flat = [];
+          for (var post of posts) {
+            comments_flat.push(comments_object[post]);
+          }
+          var ctx = document.getElementById("myChart");
+          var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: posts,
+              datasets: [{
+                data: comments_flat,
+                lineTension: 0,
+                backgroundColor: 'transparent',
+                borderColor: '#007bff',
+                borderWidth: 4,
+                pointBackgroundColor: '#007bff'
+              }]
+            },
+            options: {
+              scales: {
+                yAxes: [{
+                  ticks: {
+                    beginAtZero: false
+                  }
+                }]
+              },
+              legend: {
+                display: false,
+              }
+            }
+          });
+
+      });
+
+    </script>
+  </body>
+</html>
